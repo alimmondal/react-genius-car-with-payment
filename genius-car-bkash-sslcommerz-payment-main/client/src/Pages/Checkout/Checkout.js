@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import React, { useContext } from "react";
 import { useLoaderData } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthProvider/AuthProvider";
 
@@ -25,7 +25,7 @@ const Checkout = () => {
       phone,
       address,
       postcode,
-      currency
+      currency,
     };
 
     // if(phone.length > 10){
@@ -34,7 +34,7 @@ const Checkout = () => {
     // else{
 
     // }
-
+    // console.log(order);
     fetch("http://localhost:5000/orders", {
       method: "POST",
       headers: {
@@ -45,20 +45,28 @@ const Checkout = () => {
     })
       .then((res) => res.json())
       .then((data) => {
+        // console.log(data);
         window.location.replace(data.url);
+        if (data.acknowledged) {
+          alert("Order placed successfully");
+          form.reset();
+        }
       })
       .catch((er) => console.error(er));
   };
 
   return (
     <div>
-      <form onSubmit={handlePlaceOrder} className="flex items-center justify-between">
-        <div>
+      <form
+        onSubmit={handlePlaceOrder}
+        className="flex items-center justify-between flex-wrap py-20"
+      >
+        <div className="">
           <h2 className="text-4xl">You are about to order: {title}</h2>
           <h4 className="text-3xl">Price: {price}</h4>
           <img src={img} alt="" />
         </div>
-        <div>
+        <div className="">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <input
               name="firstName"
@@ -79,6 +87,17 @@ const Checkout = () => {
               className="input input-ghost w-full  input-bordered"
               required
             />
+
+            <select
+              defaultValue="BDT"
+              name="currency"
+              className="select select-bordered w-full max-w-xs"
+            >
+              <option disabled>Currencey</option>
+              <option value="BDT">BDT</option>
+              <option value="USD">USD</option>
+            </select>
+
             <input
               name="email"
               type="text"
@@ -87,32 +106,23 @@ const Checkout = () => {
               className="input input-ghost w-full  input-bordered"
               readOnly
             />
-          <select
-            defaultValue="BDT"
-            name="currency"
-            className="select select-bordered max-w-xs"
-          >
-            <option value="BDT">BDT</option>
-            <option value="USD">USD</option>
-          </select>
-
-          <input
-            type="text"
-            name="postcode"
-            placeholder="Your Postcode"
-            className="input input-ghost w-full  input-bordered"
-          />
+            <input
+              name="postcode"
+              type="text"
+              placeholder="Your postcode"
+              className="input input-ghost w-full  input-bordered"
+            />
+          </div>
+          <div className="my-2">
+            <textarea
+              name="address"
+              className="textarea textarea-bordered h-24 w-full"
+              placeholder="Your address"
+              required
+            ></textarea>
           </div>
 
-
-          <textarea
-            name="address"
-            className="textarea textarea-bordered h-24 w-full my-5"
-            placeholder="Your Address"
-            required
-          ></textarea>
-
-          <input className="btn w-full" type="submit" value="Pay" />
+          <input className="btn" type="submit" value="Pay for Your Order" />
         </div>
       </form>
     </div>
